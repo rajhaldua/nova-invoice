@@ -16,27 +16,14 @@ export async function createOrganization(formData: FormData) {
     redirect(`/onboarding?error=${encodeURIComponent('Not authenticated')}`)
   }
 
-  // 2. Generate UUID and Create the organization
-  const orgId = crypto.randomUUID()
-  const { error: orgError } = await supabase
-    .from('organizations')
-    .insert({ id: orgId, name, currency })
+  // 2. Create the organization and add user as owner atomically via RPC
+  const { error: orgError } = await supabase.rpc('create_organization', {
+    org_name: name,
+    org_currency: currency
+  })
 
   if (orgError) {
     redirect(`/onboarding?error=${encodeURIComponent(orgError.message)}`)
-  }
-
-  // 3. Add user as owner to organization_members
-  const { error: memberError } = await supabase
-    .from('organization_members')
-    .insert({
-      organization_id: orgId,
-      user_id: user.id,
-      role: 'owner'
-    })
-
-  if (memberError) {
-    redirect(`/onboarding?error=${encodeURIComponent(memberError.message)}`)
   }
 
   revalidatePath('/', 'layout')
