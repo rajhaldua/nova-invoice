@@ -337,3 +337,26 @@ CREATE POLICY "Org members can delete attachments" ON public.attachments FOR DEL
 CREATE POLICY "Org members can view settings" ON public.settings FOR SELECT USING (is_org_member(organization_id));
 CREATE POLICY "Org members can update settings" ON public.settings FOR UPDATE USING (is_org_member(organization_id));
 CREATE POLICY "Org members can insert settings" ON public.settings FOR INSERT WITH CHECK (is_org_member(organization_id));
+
+-- Create organization safely via RPC to avoid RLS circular dependencies
+CREATE OR REPLACE FUNCTION create_organization(org_name text, org_currency text)
+RETURNS uuid
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  new_org_id uuid;
+BEGIN
+  -- Insert the organization
+  INSERT INTO organizations (name, currency)
+  VALUES (org_name, org_currency)
+  RETURNING id INTO new_org_id;
+
+  -- Add the current user as owner
+  INSERT INTO organization_members (organization_id, user_id, role)
+  VALUES (new_org_id, auth.uid(), 'owner');
+
+  RETURN new_org_id;
+END;
+$$;
+
