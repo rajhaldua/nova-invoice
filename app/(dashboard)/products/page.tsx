@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Package } from 'lucide-react'
 
 export default async function ProductsPage() {
   const supabase = await createClient()
@@ -29,54 +29,68 @@ export default async function ProductsPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Products & Services</h1>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Products & Services</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Manage your catalog of billable items.</p>
+        </div>
         <Link href="/products/new">
-          <Button><Plus className="w-4 h-4 mr-2" /> Add Product</Button>
+          <Button className="h-9 bg-primary text-primary-foreground shadow-md transition-all hover:shadow-lg active:scale-95">
+            <Plus className="w-4 h-4 mr-2" /> Add Product
+          </Button>
         </Link>
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="glass border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden shadow-sm">
+        <CardHeader className="border-b border-border/30 bg-muted/20">
           <CardTitle>All Products</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Unit Price</TableHead>
-                <TableHead>Tax Rate</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+            <TableHeader className="bg-muted/30">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="font-semibold">Name</TableHead>
+                <TableHead className="font-semibold">SKU</TableHead>
+                <TableHead className="font-semibold">Unit Price</TableHead>
+                <TableHead className="font-semibold">Tax Rate</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="text-right font-semibold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products?.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-zinc-500">
-                    No products found. Create your first one.
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={6} className="h-[300px]">
+                    <div className="flex h-full flex-col items-center justify-center space-y-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <Package className="h-6 w-6 text-primary" />
+                      </div>
+                      <p className="text-lg font-medium text-foreground">No products found</p>
+                      <p className="text-sm text-muted-foreground">Add your first product to get started.</p>
+                      <Link href="/products/new" className="mt-2">
+                        <Button variant="outline" className="shadow-sm">Create Product</Button>
+                      </Link>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 products?.map((product) => (
-                  <TableRow key={product.id}>
+                  <TableRow key={product.id} className="transition-colors hover:bg-muted/40">
                     <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.sku || '-'}</TableCell>
-                    <TableCell>${product.unit_price.toFixed(2)}</TableCell>
-                    <TableCell>{product.tax_rate}%</TableCell>
+                    <TableCell className="text-muted-foreground">{product.sku || '-'}</TableCell>
+                    <TableCell className="text-muted-foreground">${product.unit_price.toFixed(2)}</TableCell>
+                    <TableCell className="text-muted-foreground">{product.tax_rate}%</TableCell>
                     <TableCell>
                       {product.active ? (
-                        <Badge variant="outline" className="text-green-600 bg-green-50 border-green-200">Active</Badge>
+                        <Badge variant="outline" className="text-emerald-600 bg-emerald-500/10 border-emerald-500/20">Active</Badge>
                       ) : (
-                        <Badge variant="outline" className="text-zinc-600 bg-zinc-50 border-zinc-200">Inactive</Badge>
+                        <Badge variant="outline" className="text-muted-foreground bg-muted/50 border-border/50">Inactive</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
                       <Link href={`/products/${product.id}`}>
-                        <Button variant="outline" size="sm">Edit</Button>
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary transition-colors">Edit</Button>
                       </Link>
                     </TableCell>
                   </TableRow>

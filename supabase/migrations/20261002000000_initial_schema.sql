@@ -360,3 +360,7 @@ BEGIN
 END;
 $$;
 
+
+-- Fix RLS so users can see their own memberships, which also unblocks the recursive 'Members can view org members' policy
+CREATE POLICY "Users can view their own memberships" ON organization_members FOR SELECT USING (user_id = auth.uid());
+
