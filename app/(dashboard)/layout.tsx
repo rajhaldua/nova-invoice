@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { signout } from '@/app/(auth)/actions'
+import { SidebarNav } from '@/components/dashboard/SidebarNav'
+import { LayoutDashboard, Users, Package, FileText, LogOut, Hexagon } from 'lucide-react'
 
 export default async function DashboardLayout({
   children,
@@ -31,43 +33,79 @@ export default async function DashboardLayout({
   const orgName = (Array.isArray(orgs) ? orgs[0]?.name : orgs?.name) || 'My Business'
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50">
-      <header className="sticky top-0 z-10 bg-white border-b border-zinc-200 h-16 flex items-center justify-between px-6">
+    <div className="relative flex min-h-screen flex-col bg-background selection:bg-primary/30">
+      {/* Subtle Abstract Background for Dashboard */}
+      <div className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center opacity-30 dark:opacity-20">
+        <div className="absolute top-[-20%] right-[-10%] h-[800px] w-[800px] rounded-full bg-primary/10 mix-blend-multiply blur-[120px] filter" />
+        <div className="absolute bottom-[-20%] left-[-10%] h-[600px] w-[600px] rounded-full bg-chart-4/10 mix-blend-multiply blur-[120px] filter" />
+      </div>
+
+      <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-border/40 bg-background/60 px-6 backdrop-blur-xl transition-all">
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="text-xl font-bold tracking-tight">
+          <Link href="/dashboard" className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground transition-opacity hover:opacity-80">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-chart-4 shadow-sm">
+              <Hexagon className="h-4 w-4 text-white fill-white/20" />
+            </div>
             NovaInvoice
           </Link>
-          <span className="text-sm px-2 py-1 bg-zinc-100 rounded-md text-zinc-600 font-medium">
+          <div className="hidden h-5 w-px bg-border md:block" />
+          <span className="hidden rounded-full border border-primary/10 bg-primary/5 px-3 py-1 text-xs font-medium text-primary md:inline-flex">
             {orgName}
           </span>
         </div>
         <nav className="flex items-center gap-4">
           <form action={signout}>
-            <Button variant="ghost" size="sm" type="submit">Sign Out</Button>
+            <Button variant="ghost" size="sm" type="submit" className="text-muted-foreground hover:text-foreground">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
           </form>
         </nav>
       </header>
-      <div className="flex flex-1 pb-16 md:pb-0">
-        <aside className="w-64 bg-white border-r border-zinc-200 p-4 hidden md:block">
-          <nav className="space-y-1">
-            <Link href="/dashboard" className="block px-3 py-2 rounded-md bg-zinc-100 font-medium text-zinc-900">Dashboard</Link>
-            <Link href="/customers" className="block px-3 py-2 rounded-md text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium">Customers</Link>
-            <Link href="/products" className="block px-3 py-2 rounded-md text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium">Products</Link>
-            <Link href="/invoices" className="block px-3 py-2 rounded-md text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium">Invoices</Link>
-            <Link href="/settings" className="block px-3 py-2 rounded-md text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium">Settings</Link>
-          </nav>
+
+      <div className="relative z-10 flex flex-1 pb-16 md:pb-0">
+        <aside className="hidden w-64 shrink-0 flex-col border-r border-border/40 bg-background/30 backdrop-blur-md md:flex">
+          <div className="flex-1 overflow-y-auto py-2">
+            <SidebarNav />
+          </div>
+          <div className="p-4 border-t border-border/40">
+            <div className="flex items-center gap-3 rounded-lg bg-card/50 p-3 border border-border/50 shadow-sm backdrop-blur-sm">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
+                {user.email?.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex flex-col overflow-hidden">
+                <span className="truncate text-sm font-medium text-foreground">{user.email}</span>
+                <span className="truncate text-xs text-muted-foreground">Admin</span>
+              </div>
+            </div>
+          </div>
         </aside>
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-          {children}
+
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="mx-auto max-w-6xl">
+            {children}
+          </div>
         </main>
       </div>
       
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 flex justify-around p-2">
-        <Link href="/dashboard" className="p-2 text-zinc-600 text-sm">Dashboard</Link>
-        <Link href="/customers" className="p-2 text-zinc-600 text-sm">Customers</Link>
-        <Link href="/products" className="p-2 text-zinc-600 text-sm">Products</Link>
-        <Link href="/invoices" className="p-2 text-zinc-600 text-sm">Invoices</Link>
+      {/* Mobile Bottom Navigation (Glassmorphism) */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-around border-t border-border/40 bg-background/80 p-2 backdrop-blur-xl md:hidden pb-safe">
+        <Link href="/dashboard" className="flex flex-col items-center p-2 text-muted-foreground hover:text-foreground">
+          <LayoutDashboard className="h-5 w-5 mb-1" />
+          <span className="text-[10px] font-medium">Dashboard</span>
+        </Link>
+        <Link href="/customers" className="flex flex-col items-center p-2 text-muted-foreground hover:text-foreground">
+          <Users className="h-5 w-5 mb-1" />
+          <span className="text-[10px] font-medium">Customers</span>
+        </Link>
+        <Link href="/products" className="flex flex-col items-center p-2 text-muted-foreground hover:text-foreground">
+          <Package className="h-5 w-5 mb-1" />
+          <span className="text-[10px] font-medium">Products</span>
+        </Link>
+        <Link href="/invoices" className="flex flex-col items-center p-2 text-muted-foreground hover:text-foreground">
+          <FileText className="h-5 w-5 mb-1" />
+          <span className="text-[10px] font-medium">Invoices</span>
+        </Link>
       </div>
     </div>
   )
