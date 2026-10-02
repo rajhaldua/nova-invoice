@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,9 +25,9 @@ export default async function PublicInvoicePage({ params }: { params: Promise<{ 
     notFound()
   }
 
-  const org = invoice.organizations as any
-  const customer = invoice.customers as any
-  const items = invoice.invoice_items as any[]
+  const org = invoice.organizations as { name: string, logo_url: string, email: string, address: string, tax_id: string } | null
+  const customer = invoice.customers as { name: string, company_name: string, email: string, billing_address: string } | null
+  const items = invoice.invoice_items as { id: string, description: string, quantity: number, unit_price: number, tax_rate: number, line_total: number, sort_order: number }[] | null
 
   return (
     <div className="min-h-screen bg-zinc-50 py-12 px-4 sm:px-6 lg:px-8">

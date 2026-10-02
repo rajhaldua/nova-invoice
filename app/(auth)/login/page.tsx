@@ -63,7 +63,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <div className="text-sm text-center text-zinc-500">
-            Don't have an account? <Link href="/signup" className="underline">Sign up</Link>
+            Don&apos;t have an account? <Link href="/signup" className="underline">Sign up</Link>
           </div>
         </CardFooter>
       </Card>

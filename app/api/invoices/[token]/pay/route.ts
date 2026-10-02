@@ -28,7 +28,7 @@ export async function POST(
 
   try {
     // 2. Map invoice items to Stripe line items
-    const lineItems = invoice.invoice_items.map((item: any) => {
+    const lineItems = invoice.invoice_items.map((item: { description: string, quantity: number, unit_price: number, tax_rate: number }) => {
       // Calculate amount in cents, including tax
       const unitAmount = item.unit_price * 100
       const taxMultiplier = 1 + (item.tax_rate / 100)
@@ -68,8 +68,9 @@ export async function POST(
     // Return the URL so the client can redirect
     return NextResponse.redirect(session.url, 303)
 
-  } catch (error: any) {
-    console.error('Stripe error:', error)
-    return new NextResponse(error.message, { status: 500 })
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Stripe error:', msg)
+    return new NextResponse(msg, { status: 500 })
   }
 }

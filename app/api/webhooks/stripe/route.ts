@@ -2,11 +2,8 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
 export async function POST(req: Request) {
   const body = await req.text()
-  const signature = req.headers.get('stripe-signature')
 
   let event: Stripe.Event
 
@@ -17,9 +14,10 @@ export async function POST(req: Request) {
     
     // For MVP testing without a webhook secret, we'll parse it directly
     event = JSON.parse(body) as Stripe.Event
-  } catch (err: any) {
-    console.error(`Webhook Error: ${err.message}`)
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Unknown error'
+    console.error(`Webhook Error: ${msg}`)
+    return new NextResponse(`Webhook Error: ${msg}`, { status: 400 })
   }
 
   const supabase = createAdminClient()

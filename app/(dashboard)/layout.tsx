@@ -27,7 +27,7 @@ export default async function DashboardLayout({
     redirect('/onboarding')
   }
 
-  const orgs: any = members[0].organizations
+  const orgs = members[0].organizations as { name: string } | { name: string }[] | null
   const orgName = (Array.isArray(orgs) ? orgs[0]?.name : orgs?.name) || 'My Business'
 
   return (

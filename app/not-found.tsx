@@ -9,7 +9,7 @@ export default function NotFound() {
         <p className="text-xl text-zinc-500 font-medium">Page not found</p>
       </div>
       <p className="text-zinc-600 max-w-md text-center">
-        Sorry, we couldn't find the page you're looking for. It might have been moved or deleted.
+        Sorry, we couldn&apos;t find the page you&apos;re looking for. It might have been moved or deleted.
       </p>
       <Link href="/">
         <Button size="lg">Return Home</Button>

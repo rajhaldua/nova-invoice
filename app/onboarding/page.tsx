@@ -1,5 +1,4 @@
 import { createOrganization } from './actions'
-import { Button } from '@/components/ui/button'
 import { SubmitButton } from '@/components/ui/submit-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,7 +33,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
         <CardHeader>
           <CardTitle className="text-2xl">Welcome to NovaInvoice</CardTitle>
           <CardDescription>
-            Let's set up your business to get started.
+            Let&apos;s set up your business to get started.
           </CardDescription>
         </CardHeader>
         <form action={createOrganization}>

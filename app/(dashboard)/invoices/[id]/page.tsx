@@ -48,16 +48,16 @@ export default async function InvoiceViewPage({ params }: { params: Promise<{ id
         </div>
         <div className="flex gap-2">
           {invoice.status === 'draft' && (
-            <form action={markAsSentWithId as any}>
+            <form action={markAsSentWithId}>
               <Button type="submit" variant="outline"><Send className="w-4 h-4 mr-2" /> Mark Sent</Button>
             </form>
           )}
           {invoice.status !== 'paid' && (
-            <form action={markAsPaidWithId as any}>
+            <form action={markAsPaidWithId}>
               <Button type="submit"><Badge className="mr-2 bg-green-500 text-white">$</Badge> Mark Paid</Button>
             </form>
           )}
-          <form action={deleteInvoiceWithId as any}>
+          <form action={deleteInvoiceWithId}>
             <Button variant="destructive" size="icon" type="submit">
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -70,9 +70,9 @@ export default async function InvoiceViewPage({ params }: { params: Promise<{ id
           <div>
             <CardTitle>Customer Details</CardTitle>
             <div className="mt-2 text-sm text-zinc-600">
-              <p className="font-medium text-zinc-900">{(invoice.customers as any)?.name}</p>
-              <p>{(invoice.customers as any)?.email}</p>
-              <p>{(invoice.customers as any)?.billing_address}</p>
+              <p className="font-medium text-zinc-900">{(invoice.customers as { name: string } | null)?.name}</p>
+              <p>{(invoice.customers as { email: string } | null)?.email}</p>
+              <p>{(invoice.customers as { billing_address: string } | null)?.billing_address}</p>
             </div>
           </div>
           <div className="text-right">
@@ -93,7 +93,7 @@ export default async function InvoiceViewPage({ params }: { params: Promise<{ id
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(invoice.invoice_items as any[])?.map((item) => (
+              {(invoice.invoice_items as { id: string, description: string, quantity: number, unit_price: number, line_total: number }[])?.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.description}</TableCell>
                   <TableCell className="text-right">{item.quantity}</TableCell>

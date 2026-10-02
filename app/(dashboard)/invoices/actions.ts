@@ -41,7 +41,7 @@ const createInvoiceSchema = z.object({
   items: z.array(invoiceItemSchema).min(1)
 })
 
-export async function createInvoice(rawData: any) {
+export async function createInvoice(rawData: unknown) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
@@ -75,7 +75,7 @@ export async function createInvoice(rawData: any) {
   if (invoiceError) return { error: invoiceError.message }
 
   // 2. Create Invoice Items
-  const invoiceItemsPayload = items.map((item: any, index: number) => ({
+  const invoiceItemsPayload = items.map((item: z.infer<typeof invoiceItemSchema>, index: number) => ({
     invoice_id: invoice.id,
     product_id: item.product_id,
     description: item.description,
@@ -96,7 +96,7 @@ export async function createInvoice(rawData: any) {
   redirect('/invoices')
 }
 
-export async function markAsSent(id: string, formData?: FormData) {
+export async function markAsSent(id: string) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
@@ -106,11 +106,11 @@ export async function markAsSent(id: string, formData?: FormData) {
     .eq('id', id)
     .eq('organization_id', orgId)
 
-  if (error) return { error: error.message }
+  if (error) throw new Error(error.message)
   revalidatePath('/invoices')
 }
 
-export async function markAsPaid(id: string, amount: number, formData?: FormData) {
+export async function markAsPaid(id: string, amount: number) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
@@ -124,11 +124,11 @@ export async function markAsPaid(id: string, amount: number, formData?: FormData
     .eq('id', id)
     .eq('organization_id', orgId)
 
-  if (error) return { error: error.message }
+  if (error) throw new Error(error.message)
   revalidatePath('/invoices')
 }
 
-export async function deleteInvoice(id: string, formData?: FormData) {
+export async function deleteInvoice(id: string) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
@@ -139,7 +139,7 @@ export async function deleteInvoice(id: string, formData?: FormData) {
     .eq('id', id)
     .eq('organization_id', orgId)
 
-  if (error) return { error: error.message }
+  if (error) throw new Error(error.message)
   
   revalidatePath('/invoices')
   redirect('/invoices')

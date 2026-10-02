@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // Optional: Vercel Cron secures the endpoint via a CRON_SECRET header
 // We skip it here for local MVP testing, but in production, you should verify it.
 
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = createAdminClient()
 
   // 1. Find all invoices that are past their due_date and still in 'sent' or 'draft' status
@@ -32,7 +32,6 @@ export async function GET(request: Request) {
       .eq('id', invoice.id)
 
     // Simulate sending an email reminder
-    const customer = invoice.customers as any
     // Reminder sent successfully
     
     processed.push(invoice.invoice_number)

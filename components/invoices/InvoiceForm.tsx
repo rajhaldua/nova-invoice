@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, Trash2 } from 'lucide-react'
 
-export function InvoiceForm({ customers, products }: { customers: any[], products: any[] }) {
+export function InvoiceForm({ customers, products }: { customers: { id: string; name: string; company_name?: string }[], products: { id: string; name: string; unit_price: number; tax_rate: number }[] }) {
   const [customerId, setCustomerId] = useState('')
   const [issueDate, setIssueDate] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -19,7 +19,7 @@ export function InvoiceForm({ customers, products }: { customers: any[], product
     { product_id: '', description: '', quantity: 1, unit_price: 0, tax_rate: 0, line_total: 0 }
   ])
 
-  const handleItemChange = (index: number, field: string, value: any) => {
+  const handleItemChange = (index: number, field: string, value: string | number) => {
     const newItems = [...items]
     const item = { ...newItems[index], [field]: value }
     
@@ -125,7 +125,7 @@ export function InvoiceForm({ customers, products }: { customers: any[], product
             <div key={idx} className="flex gap-4 items-end border-b pb-4 border-zinc-100">
               <div className="space-y-2 flex-1">
                 <Label>Product</Label>
-                <Select onValueChange={(val) => handleItemChange(idx, 'product_id', val)}>
+                <Select onValueChange={(val) => handleItemChange(idx, 'product_id', val as string)}>
                   <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
                   <SelectContent>
                     {products.map(p => (

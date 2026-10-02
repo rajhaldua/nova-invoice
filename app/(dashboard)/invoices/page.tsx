@@ -75,7 +75,7 @@ export default async function InvoicesPage() {
                 invoices?.map((invoice) => (
                   <TableRow key={invoice.id}>
                     <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                    <TableCell>{(invoice.customers as any)?.name}</TableCell>
+                    <TableCell>{(invoice.customers as { name: string } | null)?.name}</TableCell>
                     <TableCell>{invoice.issue_date}</TableCell>
                     <TableCell>{invoice.due_date}</TableCell>
                     <TableCell>${invoice.total.toFixed(2)}</TableCell>
