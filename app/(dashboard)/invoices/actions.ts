@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
 
 async function getOrganizationId() {
   const supabase = await createClient()
@@ -20,10 +21,36 @@ async function getOrganizationId() {
   return members.organization_id
 }
 
-export async function createInvoice(data: any) {
+const invoiceItemSchema = z.object({
+  product_id: z.string().uuid(),
+  description: z.string().min(1),
+  quantity: z.number().positive(),
+  unit_price: z.number().min(0),
+  tax_rate: z.number().min(0),
+  line_total: z.number().min(0)
+})
+
+const createInvoiceSchema = z.object({
+  customer_id: z.string().uuid(),
+  issue_date: z.string(),
+  due_date: z.string(),
+  subtotal: z.number().min(0),
+  tax_total: z.number().min(0),
+  total: z.number().min(0),
+  amount_due: z.number().min(0),
+  items: z.array(invoiceItemSchema).min(1)
+})
+
+export async function createInvoice(rawData: any) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
+  const parsed = createInvoiceSchema.safeParse(rawData)
+  if (!parsed.success) {
+    return { error: 'Invalid invoice data' }
+  }
+
+  const data = parsed.data
   const { customer_id, issue_date, due_date, items, ...totals } = data
 
   // 1. Create Invoice
@@ -69,7 +96,7 @@ export async function createInvoice(data: any) {
   redirect('/invoices')
 }
 
-export async function markAsSent(id: string) {
+export async function markAsSent(id: string, formData?: FormData) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
@@ -83,7 +110,7 @@ export async function markAsSent(id: string) {
   revalidatePath('/invoices')
 }
 
-export async function markAsPaid(id: string, amount: number) {
+export async function markAsPaid(id: string, amount: number, formData?: FormData) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
@@ -99,4 +126,21 @@ export async function markAsPaid(id: string, amount: number) {
 
   if (error) return { error: error.message }
   revalidatePath('/invoices')
+}
+
+export async function deleteInvoice(id: string, formData?: FormData) {
+  const supabase = await createClient()
+  const orgId = await getOrganizationId()
+
+  // Soft delete by setting deleted_at
+  const { error } = await supabase
+    .from('invoices')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('organization_id', orgId)
+
+  if (error) return { error: error.message }
+  
+  revalidatePath('/invoices')
+  redirect('/invoices')
 }

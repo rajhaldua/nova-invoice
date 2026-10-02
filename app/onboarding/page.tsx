@@ -1,5 +1,6 @@
 import { createOrganization } from './actions'
 import { Button } from '@/components/ui/button'
+import { SubmitButton } from '@/components/ui/submit-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -64,7 +65,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">Create Business</Button>
+            <SubmitButton className="w-full">Create Business</SubmitButton>
           </CardFooter>
         </form>
       </Card>

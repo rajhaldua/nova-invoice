@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
 
 async function getOrganizationId() {
   const supabase = await createClient()
@@ -20,12 +21,21 @@ async function getOrganizationId() {
   return members.organization_id
 }
 
+const productSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  sku: z.string().optional(),
+  description: z.string().optional(),
+  unit: z.string().optional(),
+  unit_price: z.number().min(0, 'Unit price must be positive'),
+  tax_rate: z.number().min(0, 'Tax rate must be positive'),
+  active: z.boolean().default(true),
+})
+
 export async function createProduct(formData: FormData) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
-  const data = {
-    organization_id: orgId,
+  const rawData = {
     name: formData.get('name') as string,
     sku: formData.get('sku') as string,
     description: formData.get('description') as string,
@@ -34,6 +44,13 @@ export async function createProduct(formData: FormData) {
     tax_rate: parseFloat(formData.get('tax_rate') as string) || 0,
     active: formData.get('active') === 'on',
   }
+
+  const parsed = productSchema.safeParse(rawData)
+  if (!parsed.success) {
+    redirect(`/products/new?error=${encodeURIComponent('Invalid product data')}`)
+  }
+
+  const data = { ...parsed.data, organization_id: orgId }
 
   const { error } = await supabase.from('products').insert(data)
 
@@ -49,7 +66,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const supabase = await createClient()
   const orgId = await getOrganizationId()
 
-  const data = {
+  const rawData = {
     name: formData.get('name') as string,
     sku: formData.get('sku') as string,
     description: formData.get('description') as string,
@@ -57,6 +74,15 @@ export async function updateProduct(id: string, formData: FormData) {
     unit_price: parseFloat(formData.get('unit_price') as string) || 0,
     tax_rate: parseFloat(formData.get('tax_rate') as string) || 0,
     active: formData.get('active') === 'on',
+  }
+
+  const parsed = productSchema.safeParse(rawData)
+  if (!parsed.success) {
+    redirect(`/products/${id}?error=${encodeURIComponent('Invalid product data')}`)
+  }
+
+  const data = {
+    ...parsed.data,
     updated_at: new Date().toISOString(),
   }
 
