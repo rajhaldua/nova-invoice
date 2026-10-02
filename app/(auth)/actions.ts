@@ -7,13 +7,10 @@ import { createClient } from '@/lib/supabase/server'
 export async function login(formData: FormData) {
   const supabase = await createClient()
 
-  const identifier = formData.get('identifier') as string
+  const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const isEmail = identifier.includes('@')
 
-  const { error } = await supabase.auth.signInWithPassword(
-    isEmail ? { email: identifier, password } : { phone: identifier, password }
-  )
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`)
@@ -26,13 +23,12 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient()
 
-  const identifier = formData.get('identifier') as string
+  const email = formData.get('email') as string
   const password = formData.get('password') as string
   const fullName = formData.get('full_name') as string
-  const isEmail = identifier.includes('@')
 
   const { error } = await supabase.auth.signUp({
-    ...(isEmail ? { email: identifier } : { phone: identifier }),
+    email,
     password,
     options: {
       data: { full_name: fullName }

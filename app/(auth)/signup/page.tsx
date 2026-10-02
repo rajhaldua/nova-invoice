@@ -50,8 +50,8 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
               <Input id="full_name" name="full_name" placeholder="John Doe" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="identifier">Email or Phone</Label>
-              <Input id="identifier" name="identifier" type="text" placeholder="m@example.com or +1234567890" required />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

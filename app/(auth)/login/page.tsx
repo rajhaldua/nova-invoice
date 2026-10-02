@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <CardHeader>
           <CardTitle className="text-2xl">Log In</CardTitle>
           <CardDescription>
-            Enter your email or phone number to login to your account.
+            Enter your email below to login to your account.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -46,8 +46,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="identifier">Email or Phone</Label>
-              <Input id="identifier" name="identifier" type="text" placeholder="m@example.com or +1234567890" required />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
